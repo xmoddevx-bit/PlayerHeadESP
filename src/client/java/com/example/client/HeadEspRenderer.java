@@ -69,13 +69,17 @@ public final class HeadEspRenderer {
 			Vec3 pos = player.position();
 			if (pos.distanceToSqr(camera) > 128.0 * 128.0) continue;
 
-			// A compact cube centered on the player's head; the body receives no ESP geometry.
-			float half = 0.22f;
+			// Layer a soft cyan halo and a brighter core around the head only.
 			float centerY = (float) (pos.y + player.getEyeHeight() - 0.08);
+			renderBox(matrices.last().pose(), buffer,
+					(float) pos.x - 0.31f, centerY - 0.31f, (float) pos.z - 0.31f,
+					(float) pos.x + 0.31f, centerY + 0.31f, (float) pos.z + 0.31f,
+					0.05f, 0.65f, 1.0f, 0.24f);
+			float half = 0.22f;
 			renderBox(matrices.last().pose(), buffer,
 					(float) pos.x - half, centerY - half, (float) pos.z - half,
 					(float) pos.x + half, centerY + half, (float) pos.z + half,
-					0.15f, 0.9f, 1.0f, 1.0f);
+					0.1f, 0.85f, 1.0f, 1.0f);
 		}
 		matrices.popPose();
 
