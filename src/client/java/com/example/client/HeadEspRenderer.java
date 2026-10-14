@@ -29,6 +29,8 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.phys.Vec3;
+import java.util.HashSet;
+import java.util.Set;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
@@ -46,6 +48,7 @@ public final class HeadEspRenderer {
 	private static final Vector4f COLOR_MODULATOR = new Vector4f(1f, 1f, 1f, 1f);
 	private static final Vector3f MODEL_OFFSET = new Vector3f();
 	private static final Matrix4f TEXTURE_MATRIX = new Matrix4f();
+	private static final Set<BlockPos> HIDDEN_HEADS = new HashSet<>();
 	private static HeadEspRenderer instance;
 
 	private BufferBuilder buffer;
@@ -53,6 +56,27 @@ public final class HeadEspRenderer {
 
 	private HeadEspRenderer() {
 		WorldRenderEvents.BEFORE_TRANSLUCENT.register(this::extractAndDrawHeads);
+		net.fabricmc.fabric.api.event.player.AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
+			if (world.isClientSide() && ExampleModClient.ESP_ENABLED) hidePlayerHead(world, pos);
+			return net.minecraft.world.InteractionResult.PASS;
+		});
+		net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+			if (world.isClientSide() && ExampleModClient.ESP_ENABLED) hidePlayerHead(world, hit.getBlockPos());
+			return net.minecraft.world.InteractionResult.PASS;
+		});
+	}
+
+	private static void hidePlayerHead(net.minecraft.world.level.Level level, BlockPos pos) {
+		var state = level.getBlockState(pos);
+		if (state.is(Blocks.PLAYER_HEAD) || state.is(Blocks.PLAYER_WALL_HEAD)) HIDDEN_HEADS.add(pos.immutable());
+	}
+
+	public static void resetHiddenHeads() {
+		HIDDEN_HEADS.clear();
+	}
+
+	public static int hiddenHeadCount() {
+		return HIDDEN_HEADS.size();
 	}
 
 	public static void initialize() {
@@ -80,6 +104,7 @@ public final class HeadEspRenderer {
 				for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
 					if (!(blockEntity instanceof SkullBlockEntity)) continue;
 					BlockPos pos = blockEntity.getBlockPos();
+					if (HIDDEN_HEADS.contains(pos)) continue;
 					if (pos.distToCenterSqr(camera) > 128.0 * 128.0) continue;
 					var state = client.level.getBlockState(pos);
 					if (!state.is(Blocks.PLAYER_HEAD) && !state.is(Blocks.PLAYER_WALL_HEAD)) continue;
