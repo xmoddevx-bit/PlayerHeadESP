@@ -2,7 +2,7 @@
 
 Clientseitige Fabric-Mod für Minecraft Java 1.21.11 von **Xmod_devX**.
 
-Hebt platzierte Spieler-Kopfblöcke (`minecraft:player_head`) und Wand-Spielerköpfe durch Wände cyanfarben hervor. Mit **H** schaltest du die Anzeige um (Taste in den Steuerungsoptionen änderbar).
+Hebt platzierte Spieler-Kopfblöcke (`minecraft:player_head`) und Wand-Spielerköpfe durch Wände cyanfarben hervor. **H** schaltet die Anzeige standardmäßig um. Du kannst die Taste unter **Optionen → Steuerung → Tastenbelegung → Player Head ESP** ändern.
 
 ## Installation
 
