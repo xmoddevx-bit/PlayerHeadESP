@@ -3,7 +3,7 @@
   "id": "playerheadesp",
   "version": "${version}",
   "name": "Player Head ESP",
-	"description": "Zeigt nur Kopfmarker anderer Spieler durch Wände. Umschalten mit H.",
+	"description": "Hebt platzierte Spieler-Kopfblöcke durch Wände hervor. Umschalten mit H.",
   "authors": ["Xmod_devX"],
   "license": "CC0-1.0",
   "icon": "assets/playerheadesp/icon.png",
