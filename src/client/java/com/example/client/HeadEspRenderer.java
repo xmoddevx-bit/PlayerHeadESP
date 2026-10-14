@@ -21,8 +21,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MappableRingBuffer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -64,22 +69,33 @@ public final class HeadEspRenderer {
 		matrices.translate(-camera.x, -camera.y, -camera.z);
 		buffer = new BufferBuilder(ALLOCATOR, HEAD_PIPELINE.getVertexFormatMode(), HEAD_PIPELINE.getVertexFormat());
 
-		for (Player player : client.level.players()) {
-			if (player == client.player || player.isRemoved() || player.isSpectator()) continue;
-			Vec3 pos = player.position();
-			if (pos.distanceToSqr(camera) > 128.0 * 128.0) continue;
+		BlockPos cameraBlock = BlockPos.containing(camera);
+		int cameraChunkX = cameraBlock.getX() >> 4;
+		int cameraChunkZ = cameraBlock.getZ() >> 4;
+		// Scan only nearby loaded chunks; getChunk(..., false) never loads new chunks.
+		for (int chunkX = cameraChunkX - 8; chunkX <= cameraChunkX + 8; chunkX++) {
+			for (int chunkZ = cameraChunkZ - 8; chunkZ <= cameraChunkZ + 8; chunkZ++) {
+				LevelChunk chunk = client.level.getChunkSource().getChunk(chunkX, chunkZ, ChunkStatus.FULL, false);
+				if (chunk == null) continue;
+				for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+					if (!(blockEntity instanceof SkullBlockEntity)) continue;
+					BlockPos pos = blockEntity.getBlockPos();
+					if (pos.distToCenterSqr(camera) > 128.0 * 128.0) continue;
+					var state = client.level.getBlockState(pos);
+					if (!state.is(Blocks.PLAYER_HEAD) && !state.is(Blocks.PLAYER_WALL_HEAD)) continue;
 
-			// Layer a soft cyan halo and a brighter core around the head only.
-			float centerY = (float) (pos.y + player.getEyeHeight() - 0.08);
-			renderBox(matrices.last().pose(), buffer,
-					(float) pos.x - 0.31f, centerY - 0.31f, (float) pos.z - 0.31f,
-					(float) pos.x + 0.31f, centerY + 0.31f, (float) pos.z + 0.31f,
-					0.05f, 0.65f, 1.0f, 0.24f);
-			float half = 0.22f;
-			renderBox(matrices.last().pose(), buffer,
-					(float) pos.x - half, centerY - half, (float) pos.z - half,
-					(float) pos.x + half, centerY + half, (float) pos.z + half,
-					0.1f, 0.85f, 1.0f, 1.0f);
+					// Outline the placed player-head block, including wall-mounted heads.
+					float x = pos.getX() + 0.5f;
+					float y = pos.getY() + 0.5f;
+					float z = pos.getZ() + 0.5f;
+					renderBox(matrices.last().pose(), buffer,
+							x - 0.36f, y - 0.36f, z - 0.36f, x + 0.36f, y + 0.36f, z + 0.36f,
+							0.05f, 0.65f, 1.0f, 0.24f);
+					renderBox(matrices.last().pose(), buffer,
+							x - 0.27f, y - 0.27f, z - 0.27f, x + 0.27f, y + 0.27f, z + 0.27f,
+							0.1f, 0.85f, 1.0f, 1.0f);
+				}
+			}
 		}
 		matrices.popPose();
 
