@@ -13,6 +13,7 @@ import org.lwjgl.glfw.GLFW;
 public class ExampleModClient implements ClientModInitializer {
 	public static boolean ESP_ENABLED = false;
 	private static KeyMapping toggleKey;
+	private static KeyMapping manageHeadsKey;
 	private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
 			Identifier.fromNamespaceAndPath("playerheadesp", "main"));
 
@@ -22,12 +23,18 @@ public class ExampleModClient implements ClientModInitializer {
 		toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
 				"key.playerheadesp.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H,
 			KEY_CATEGORY));
+		manageHeadsKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+				"key.playerheadesp.manage_heads", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J,
+				KEY_CATEGORY));
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (toggleKey.consumeClick()) {
 				ESP_ENABLED = !ESP_ENABLED;
 				if (client.player != null) {
 					client.player.displayClientMessage(Component.literal("Player Head ESP: " + (ESP_ENABLED ? "AN" : "AUS")), true);
 				}
+			}
+			while (manageHeadsKey.consumeClick()) {
+				client.setScreen(new HeadEspResetScreen());
 			}
 		});
 	}
