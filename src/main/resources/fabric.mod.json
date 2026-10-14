@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "playerheadesp",
+  "version": "${version}",
+  "name": "Player Head ESP",
+	"description": "Zeigt nur Kopfmarker anderer Spieler durch Wände. Umschalten mit H.",
+  "authors": ["Xmod_devX"],
+  "license": "CC0-1.0",
+  "icon": "assets/playerheadesp/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.example.client.ExampleModClient"]
+  },
+  "mixins": [
+    { "config": "playerheadesp.client.mixins.json", "environment": "client" }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

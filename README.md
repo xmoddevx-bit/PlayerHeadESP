@@ -8,7 +8,7 @@ Zeigt einen kleinen, cyanfarbenen Marker in Kopfgröße an der Kopfposition ande
 
 1. Fabric Loader für Minecraft 1.21.11 installieren.
 2. Fabric API für 1.21.11 herunterladen.
-3. `PlayerHeadESP-1.0.0.jar` und Fabric API in den `mods`-Ordner legen.
+3. Die Datei `PlayerHeadESP-1.0.0.jar` aus dem Repository herunterladen und zusammen mit Fabric API in den `mods`-Ordner legen.
 4. Im Spiel mit **H** umschalten.
 
 ## Build
