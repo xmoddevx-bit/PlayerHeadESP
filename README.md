@@ -2,7 +2,7 @@
 
 Clientseitige Fabric-Mod für Minecraft Java 1.21.11 von **Xmod_devX**.
 
-Lässt die Kopfposition anderer Spieler durch Wände cyanfarben leuchten: ein heller Kern mit größerem Halo. Der Körper wird nicht hervorgehoben. Mit **H** schaltest du die Anzeige um (Taste in den Steuerungsoptionen änderbar).
+Hebt platzierte Spieler-Kopfblöcke (`minecraft:player_head`) und Wand-Spielerköpfe durch Wände cyanfarben hervor. Mit **H** schaltest du die Anzeige um (Taste in den Steuerungsoptionen änderbar).
 
 ## Installation
 
